@@ -23,7 +23,7 @@ Tone = (function() {
         }
         this.setTone = function(tone) {
             this.currentPosition = this.findTonePosition(tone);
-            return this;   
+            return this;
         }
 
         this.targetLanguage = 'pt';
@@ -71,7 +71,8 @@ Tone = (function() {
         }
     }
 
-    Tone.getNotes = () => notes;
+    Tone.getAllTones = (mode = "sharp") => notes.map(tone => getAdaptedTone(tone, mode));
+
     Tone.prototype.findTonePosition = (searchingTone) => {
        return notes.findIndex((note) => isToneEqual(note, searchingTone));
     }
@@ -83,13 +84,39 @@ Tone = (function() {
     }
 
     function getAdaptedTone(toneOrArrTone, mode) {
-        if(mode == "flat") 
-            return extractFlat(toneOrArrTone); 
+        if(mode == "flat")
+            return extractFlat(toneOrArrTone);
         else if(mode == "sharp")
-            return extractSharp(toneOrArrTone); 
+            return extractSharp(toneOrArrTone);
     }
 
     return Tone;
 })();
 
-m = new Tone();
+function Scale(startTone) {
+    let formation = [];
+    let tones = [];
+    this.initialTone = new Tone().setTone(startTone);
+
+    const getTonesFromFormation = (function (formation) {
+        let toneScale = [];        
+        let currentTone = this.initialTone;
+        formation.forEach( (interval) => {
+            toneScale.push( new Tone().setTone(currentTone.getTone())  );
+            currentTone.upSemitone(interval);
+        });
+        
+        return toneScale;
+    }).bind(this);
+    
+    this.setFormation = function(formationArg) {
+        formation = formationArg;
+        tones = getTonesFromFormation(formationArg);
+        return this;
+    }
+    this.getFormation = () => formation;
+    
+    this.getTones = () => tones;
+
+    this.getPlainTones = () => tones.map(tone => tone.getTone());
+} 
