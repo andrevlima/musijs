@@ -1,0 +1,19 @@
+{
+  "name": "musijs",
+  "version": "1.0.0",
+  "description": "library written in javascript to work with music notes and scales logic in a dynamic way, like calculation or shuffle of notes, scales and intervals.",
+  "main": "mu.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andrevlima/musijs.git"
+  },
+  "author": "Andre Vinicius Lima",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/andrevlima/musijs/issues"
+  },
+  "homepage": "https://github.com/andrevlima/musijs#readme"
+}
