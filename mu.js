@@ -49,6 +49,10 @@ Tone = (function() {
         this.downTone = (tones = 1) => {    
             return this.downSemitone(tones * 2);
         }
+
+        this.hasAccident = function() {
+            return hasAccident(notes[this.currentPosition]);
+        }
     }
 
     function hasAccident(toneOrArrTone) {
@@ -119,4 +123,71 @@ function Scale(startTone) {
     this.getTones = () => tones;
 
     this.getPlainTones = () => tones.map(tone => tone.getTone());
-} 
+}
+
+function ToneSorter() {
+    const self = this;
+
+    self.tone = null;
+    self.nextTone = null;
+    self.nextInterval = null;
+    self.nextMoveIsForward = null;
+
+    self.accidentalsAllowed = false;
+
+    self.isAccidentalsAllow = (allow) => accidentalsAllowed = allow; this;
+
+    let maxInterval = 1;
+    let minInterval = 1;
+
+    self.setMaxInterval = (number) => maxInterval = number; this;
+    self.setMinInterval = (number) => minInterval = number; this;
+
+    function getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function sortCurrentTone() {
+        let tones = Tone.getAllTones();
+        let nextTonePosition = getRandomInt(0, tones.length - 1);
+
+        self.tone = new Tone().setTone(tones[nextTonePosition]);
+    }
+
+    function sortNextTone() {
+        self.nextMoveIsForward = Boolean(getRandomInt(0,1));
+        self.nextInterval = getRandomInt(minInterval, maxInterval);
+
+        self.nextTone = new Tone().setTone(self.tone.getTone());
+
+        if(self.nextMoveIsForward) {
+            self.nextTone.upSemitone(self.nextInterval);
+        } else {
+            self.nextTone.downSemitone(self.nextInterval);
+        }
+
+        if(!self.accidentalsAllowed && self.nextTone.hasAccident()) {
+            if(self.nextMoveIsForward) {
+                self.nextTone.upSemitone(1);
+            } else {
+                self.nextTone.downSemitone(1);
+            }
+        }
+    }
+    
+
+    self.sort = function() {
+        sortCurrentTone();
+        sortNextTone();
+
+        return self;
+    }
+
+    self.isNextTone = function(tryingNextTone) {
+        return String(tryingNextTone) === String(self.nextTone.getTone()); 
+    }
+
+    self.sort();
+}
