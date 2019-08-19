@@ -7,5 +7,18 @@
         <select data-bind="options: allTones, value: tone"></select>
         <label data-bind="text: scale">
     </div>
+
+    <div data-bind="with: sorter">
+        <label>Interval:</label>
+        <label data-bind="if: nextMoveIsForward">+</label>
+        <label data-bind="ifnot: nextMoveIsForward">-</label>
+        <label data-bind="text: nextInterval"></label>
+        <label>Tone:</label>
+        <label data-bind="text: tone.getTone()"></label>
+        <label>Next Tone:</label>
+        <label data-bind="text: nextTone.getTone()"></label>
+
+    </div>
+    <button data-bind="click: doSort">Sort</button>
 </body>
 <script src="/index.js"></script>
