@@ -97,97 +97,105 @@ Tone = (function() {
     return Tone;
 })();
 
-function Scale(startTone) {
-    let formation = [];
-    let tones = [];
-    this.initialTone = new Tone().setTone(startTone);
+Scale = (function() {
+	function Scale(startTone) {
+		let formation = [];
+		let tones = [];
+		this.initialTone = new Tone().setTone(startTone);
 
-    const getTonesFromFormation = (function (formation) {
-        let toneScale = [];        
-        let currentTone = this.initialTone;
-        formation.forEach( (interval) => {
-            toneScale.push( new Tone().setTone(currentTone.getTone())  );
-            currentTone.upSemitone(interval);
-        });
-        
-        return toneScale;
-    }).bind(this);
-    
-    this.setFormation = function(formationArg) {
-        formation = formationArg;
-        tones = getTonesFromFormation(formationArg);
-        return this;
-    }
-    this.getFormation = () => formation;
-    
-    this.getTones = () => tones;
+		const getTonesFromFormation = (function (formation) {
+			let toneScale = [];        
+			let currentTone = this.initialTone;
+			formation.forEach( (interval) => {
+				toneScale.push( new Tone().setTone(currentTone.getTone())  );
+				currentTone.upSemitone(interval);
+			});
 
-    this.getPlainTones = () => tones.map(tone => tone.getTone());
-}
+			return toneScale;
+		}).bind(this);
 
-function ToneSorter() {
-    const self = this;
+		this.setFormation = function(formationArg) {
+			formation = formationArg;
+			tones = getTonesFromFormation(formationArg);
+			return this;
+		}
+		this.getFormation = () => formation;
 
-    self.tone = null;
-    self.nextTone = null;
-    self.nextInterval = null;
-    self.nextMoveIsForward = null;
+		this.getTones = () => tones;
 
-    self.accidentalsAllowed = false;
+		this.getPlainTones = () => tones.map(tone => tone.getTone());
+	}
+	
+	return Scale;
+})();
 
-    self.isAccidentalsAllow = (allow) => accidentalsAllowed = allow; this;
 
-    let maxInterval = 1;
-    let minInterval = 1;
+ToneSorter = (function() {
+	function ToneSorter() {
+		const self = this;
 
-    self.setMaxInterval = (number) => maxInterval = number; this;
-    self.setMinInterval = (number) => minInterval = number; this;
+		self.tone = null;
+		self.nextTone = null;
+		self.nextInterval = null;
+		self.nextMoveIsForward = null;
 
-    function getRandomInt(min, max) {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
+		self.accidentalsAllowed = false;
 
-    function sortCurrentTone() {
-        let tones = Tone.getAllTones();
-        let nextTonePosition = getRandomInt(0, tones.length - 1);
+		self.isAccidentalsAllow = (allow) => accidentalsAllowed = allow; this;
 
-        self.tone = new Tone().setTone(tones[nextTonePosition]);
-    }
+		let maxInterval = 1;
+		let minInterval = 1;
 
-    function sortNextTone() {
-        self.nextMoveIsForward = Boolean(getRandomInt(0,1));
-        self.nextInterval = getRandomInt(minInterval, maxInterval);
+		self.setMaxInterval = (number) => maxInterval = number; this;
+		self.setMinInterval = (number) => minInterval = number; this;
 
-        self.nextTone = new Tone().setTone(self.tone.getTone());
+		function getRandomInt(min, max) {
+			min = Math.ceil(min);
+			max = Math.floor(max);
+			return Math.floor(Math.random() * (max - min + 1)) + min;
+		}
 
-        if(self.nextMoveIsForward) {
-            self.nextTone.upSemitone(self.nextInterval);
-        } else {
-            self.nextTone.downSemitone(self.nextInterval);
-        }
+		function sortCurrentTone() {
+			let tones = Tone.getAllTones();
+			let nextTonePosition = getRandomInt(0, tones.length - 1);
 
-        if(!self.accidentalsAllowed && self.nextTone.hasAccident()) {
-            if(self.nextMoveIsForward) {
-                self.nextTone.upSemitone(1);
-            } else {
-                self.nextTone.downSemitone(1);
-            }
-        }
-    }
-    
+			self.tone = new Tone().setTone(tones[nextTonePosition]);
+		}
 
-    self.sort = function() {
-        sortCurrentTone();
-        sortNextTone();
+		function sortNextTone() {
+			self.nextMoveIsForward = Boolean(getRandomInt(0,1));
+			self.nextInterval = getRandomInt(minInterval, maxInterval);
 
-        return self;
-    }
+			self.nextTone = new Tone().setTone(self.tone.getTone());
 
-    self.isNextTone = function(tryingNextTone) {
-        return String(tryingNextTone) === String(self.nextTone.getTone()); 
-    }
+			if(self.nextMoveIsForward) {
+				self.nextTone.upSemitone(self.nextInterval);
+			} else {
+				self.nextTone.downSemitone(self.nextInterval);
+			}
 
-    self.sort();
-}
+			if(!self.accidentalsAllowed && self.nextTone.hasAccident()) {
+				if(self.nextMoveIsForward) {
+					self.nextTone.upSemitone(1);
+				} else {
+					self.nextTone.downSemitone(1);
+				}
+			}
+		}
+
+
+		self.sort = function() {
+			sortCurrentTone();
+			sortNextTone();
+
+			return self;
+		}
+
+		self.isNextTone = function(tryingNextTone) {
+			return String(tryingNextTone) === String(self.nextTone.getTone()); 
+		}
+
+		self.sort();
+	}
+	return ToneSorter;
+})();
